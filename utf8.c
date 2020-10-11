@@ -192,7 +192,7 @@ size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)
     return done;
 }
 
-size_t utf8_to_locale(char *buffer, char *s, size_t count)
+size_t utf8_to_locale(char *buffer, const char *s, size_t count)
 {
     int32_t rune[2] = {0, 0};
     /*
@@ -224,7 +224,7 @@ size_t utf8_to_locale(char *buffer, char *s, size_t count)
     return done;
 }
 
-size_t utf8_of_locale(char *buffer, char *s, size_t count)
+size_t utf8_of_locale(char *buffer, const char *s, size_t count)
 {
     int32_t rune;
     wchar_t ws_buffer[2] = {0, 0};
@@ -296,7 +296,7 @@ size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)
     return done;
 }
 
-size_t utf8_to_locale(char *buffer, char *s, size_t count)
+size_t utf8_to_locale(char *buffer, const char *s, size_t count)
 {
     int32_t rune[2] = {0, 0};
     size_t done = 0, parsed, mb_size;
@@ -321,7 +321,7 @@ size_t utf8_to_locale(char *buffer, char *s, size_t count)
     return done;
 }
 
-size_t utf8_of_locale(char *buffer, char *s, size_t count)
+size_t utf8_of_locale(char *buffer, const char *s, size_t count)
 {
     wchar_t ws_buffer[2] = {0, 0};
     size_t done = 0, mb_size, ws_size, rune_size;
