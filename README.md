@@ -138,9 +138,9 @@ characters converted from the valid UTF-8 characters of the zero-terminated
 string `s`. Partial sequences are not converted.  
 Returns the number of non-zero wide characters converted (even if `buffer` 
 is NULL).  
-Returns 0 if the string `s` is empty ("\0").  
+Returns 0 if the string `s` is empty (`"\0"`).  
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
-Returns (size_t)-1 if `s`contains invalid UTF-8 sequences.
+Returns `(size_t)-1` if `s`contains invalid UTF-8 sequences.
 
 #### **Example (utf8_to_wchars)**
 ```/* work in progress */```
@@ -153,9 +153,9 @@ characters converted from the wide characters of the zero-terminated wide
 string `p`. Partial sequences are not converted.  
 Returns the number of non-zero bytes converted (even if `buffer` 
 is NULL).  
-Returns 0 if the string `p` is empty ("\0").  
+Returns 0 if the string `p` is empty (`"\0"`).  
 Returns 0 and sets the global variable `errno` to EINVAL if `p` is NULL.  
-Returns (size_t)-1 if `p` can't convert to valid UTF-8.
+Returns `(size_t)-1` if `p` can't convert to valid UTF-8.
 
 #### **Example (utf8_of_wchars)**
 ```/* work in progress */```
@@ -168,9 +168,9 @@ locale encoded characters converted from the UTF-8 characters of the
 zero-terminated string `s`. Partial sequences are not converted.  
 Returns the number of non-zero bytes converted (even if `buffer` 
 is NULL).  
-Returns 0 if the string `s` is empty ("\0").  
+Returns 0 if the string `s` is empty (`"\0"`).  
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
-Returns (size_t)-1 if `s` can't convert to valid UTF-8.
+Returns `(size_t)-1` if `s` can't convert to valid UTF-8.
 
 #### **Example (utf8_to_locale)**
 See [`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_locale).
@@ -183,9 +183,9 @@ characters converted from the locale encoded characters of the
 zero-terminated string `s`. Partial sequences are not converted.  
 Returns the number of non-zero bytes converted (even if `buffer` 
 is NULL).  
-Returns 0 if the string `s` is empty ("\0").  
+Returns 0 if the string `s` is empty (`"\0"`).  
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
-Returns (size_t)-1 if `s` can't convert to valid UTF-8.
+Returns `(size_t)-1` if `s` can't convert to valid UTF-8.
 
 #### **Example (utf8_of_locale)**
 ```
