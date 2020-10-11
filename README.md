@@ -142,6 +142,9 @@ Returns 0 if the string `s` is empty ("\0").
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
 Returns (size_t)-1 if `s`contains invalid UTF-8 sequences.
 
+#### **Example (utf8_to_wchars)**
+```/* work in progress */```
+
 ### **utf8_of_wchars**
 `size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`
 
@@ -154,6 +157,9 @@ Returns 0 if the string `p` is empty ("\0").
 Returns 0 and sets the global variable `errno` to EINVAL if `p` is NULL.  
 Returns (size_t)-1 if `p` can't convert to valid UTF-8.
 
+#### **Example (utf8_of_wchars)**
+```/* work in progress */```
+
 ### **utf8_to_locale**
 `size_t utf8_to_locale(char *buffer, const char *s, size_t count)`
 
@@ -165,6 +171,9 @@ is NULL).
 Returns 0 if the string `s` is empty ("\0").  
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
 Returns (size_t)-1 if `s` can't convert to valid UTF-8.
+
+#### **Example (utf8_to_locale)**
+See [`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_locale).
 
 ### **utf8_of_locale**
 `size_t utf8_of_locale(char *buffer, const char *s, size_t count)`
