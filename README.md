@@ -14,10 +14,11 @@ in the source. But a 0 string terminator can easily be added manually as
 shown in the examples below.
 The functions `utf8_to_wchars` and `utf8_of_wchars` convert to and from the
 platform-specific wide characters (that is UTF-32 on Unix and UTF-16 on 
-Windows). The functions `utf8_to_locale` and `utf8_of_locale` convert to and
-from the local character set (code page). If the current locale setting use
+Windows).  
+The functions `utf8_to_locale` and `utf8_of_locale` convert to and
+from the local character set (code page). If the current locale uses
 UTF-8 these functions are not needed. They work however on Unix (and Linux)
-allowing the use of UTF-8 in an application even when the local code page is
+allowing the use of UTF-8 in any application even when the local code page is
 ISO/ANSI.
 
 ## Index
