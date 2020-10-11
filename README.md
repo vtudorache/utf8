@@ -22,26 +22,26 @@ allowing the use of UTF-8 in any application even when the local code page is
 ISO/ANSI.
 
 ## Index
-[`size_t utf8_decode(int32_t *rune, char *s, size_t n_bytes)`](https://github.com/vtudorache/utf8#utf8_decode)  
+[`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](https://github.com/vtudorache/utf8#utf8_decode)  
 [`size_t utf8_encode(char *p, int32_t rune)`](https://github.com/vtudorache/utf8#utf8_encode)  
-[`size_t utf8_to_wchars(wchar_t *buffer, char *s, size_t count)`](https://github.com/vtudorache/utf8#utf8_to_wchars)  
-[`size_t utf8_of_wchars(char *buffer, wchar_t *p, size_t count)`](https://github.com/vtudorache/utf8#utf8_of_wchars)  
-[`size_t utf8_to_locale(char *buffer, char *s, size_t count)`](https://github.com/vtudorache/utf8#utf8_to_locale)  
-[`size_t utf8_of_locale(char *buffer, char *s, size_t count)`](https://github.com/vtudorache/utf8#utf8_of_locale)  
+[`size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#utf8_to_wchars)  
+[`size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`](https://github.com/vtudorache/utf8#utf8_of_wchars)  
+[`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#utf8_to_locale)  
+[`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#utf8_of_locale)  
 
 ## Examples
-[`size_t utf8_decode(int32_t *rune, char *s, size_t n_bytes)`](https://github.com/vtudorache/utf8#example-utf8_decode)  
+[`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](https://github.com/vtudorache/utf8#example-utf8_decode)  
 [`size_t utf8_encode(char *p, int32_t rune)`](https://github.com/vtudorache/utf8#example-utf8_encode)  
-[`size_t utf8_to_wchars(wchar_t *buffer, char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_to_wchars)  
-[`size_t utf8_of_wchars(char *buffer, wchar_t *p, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_wchars)  
-[`size_t utf8_to_locale(char *buffer, char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_to_locale)  
-[`size_t utf8_of_locale(char *buffer, char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_locale)  
+[`size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_to_wchars)  
+[`size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_wchars)  
+[`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_to_locale)  
+[`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_locale)  
 
 ## Source
 [utf8.c](https://github.com/vtudorache/utf8/blob/main/utf8.c)  
 
 ### **utf8_decode**
-`size_t utf8_decode(int32_t *rune, char *s, size_t n_bytes)`
+`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`
 
 Writes at the address given by `rune` the code point obtained from parsing
 at most `n_bytes` characters of the zero-terminated string `s`.  
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 ```
 
 ### **utf8_to_wchars**
-`size_t utf8_to_wchars(wchar_t *buffer, char *s, size_t count)`
+`size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)`
 
 Writes at the address given by `buffer` (when not NULL) up to `count` wide 
 characters converted from the valid UTF-8 characters of the zero-terminated 
@@ -143,7 +143,7 @@ Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.
 Returns (size_t)-1 if `s`contains invalid UTF-8 sequences.
 
 ### **utf8_of_wchars**
-`size_t utf8_of_wchars(char *buffer, wchar_t *p, size_t count)`
+`size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`
 
 Writes at the address given by `buffer` (when not NULL) up to `count` 
 characters converted from the wide characters of the zero-terminated wide
@@ -155,7 +155,7 @@ Returns 0 and sets the global variable `errno` to EINVAL if `p` is NULL.
 Returns (size_t)-1 if `p` can't convert to valid UTF-8.
 
 ### **utf8_to_locale**
-`size_t utf8_to_locale(char *buffer, char *s, size_t count)`
+`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`
 
 Writes at the address given by `buffer` (when not NULL) up to `count` 
 locale encoded characters converted from the UTF-8 characters of the 
@@ -167,7 +167,7 @@ Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.
 Returns (size_t)-1 if `s` can't convert to valid UTF-8.
 
 ### **utf8_of_locale**
-`size_t utf8_of_locale(char *buffer, char *s, size_t count)`
+`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`
 
 Writes at the address given by `buffer` (when not NULL) up to `count` 
 characters converted from the locale encoded characters of the 
