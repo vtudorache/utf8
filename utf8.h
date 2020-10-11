@@ -67,7 +67,7 @@ Returns 0 if the string `s` is empty ("\0").
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.
 Returns (size_t)-1 if `s` can't convert to valid UTF-8.
 */
-size_t utf8_to_locale(char *buffer, char *s, size_t count);
+size_t utf8_to_locale(char *buffer, const char *s, size_t count);
 
 /*
 utf8_of_locale
@@ -81,6 +81,6 @@ Returns 0 if the string `s` is empty ("\0").
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.
 Returns (size_t)-1 if `s` can't convert to valid UTF-8.
 */
-size_t utf8_of_locale(char *buffer, char *s, size_t count);
+size_t utf8_of_locale(char *buffer, const char *s, size_t count);
 
 #endif
