@@ -37,7 +37,7 @@ ISO/ANSI.
 [`size_t utf8_of_locale(char *buffer, char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_locale)  
 
 ## Source
-[utf8.c](https://github.com/vtudorache/utf8/-/blob/master/utf8.c)  
+[utf8.c](https://github.com/vtudorache/utf8/blob/main/utf8.c)  
 
 ### **utf8_decode**
 Writes at the address given by `rune` the code point obtained from parsing
@@ -48,7 +48,7 @@ sequence or the resulting code point is invalid.
 The source pointer `s` can't be NULL.  
 
 #### **Example (utf8_decode)**
-```
+```C
 #include <stdio.h>
 #include <stdint.h>
 
@@ -90,7 +90,7 @@ Returns 0 if `rune` is not a valid code point (the surrogate range is not
 valid).  
 
 #### **Example (utf8_encode)**
-```
+```C
 #include <stdio.h>
 #include <stdint.h>
 
@@ -155,8 +155,18 @@ Returns 0 if the string `s` is empty ("\0").
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
 Returns (size_t)-1 if `s` can't convert to valid UTF-8.
 
+### **utf8_of_locale**
+Writes at the address given by `buffer` (when not NULL) up to `count` 
+characters converted from the locale encoded characters of the 
+zero-terminated string `s`. Partial sequences are not converted.  
+Returns the number of non-zero bytes converted (even if `buffer` 
+is NULL).  
+Returns 0 if the string `s` is empty ("\0").  
+Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
+Returns (size_t)-1 if `s` can't convert to valid UTF-8.
+
 #### **Example (utf8_of_locale)**
-```
+```C
 #include <locale.h>
 #include <stdio.h>
 
@@ -225,12 +235,3 @@ int main(int argc, char **argv)
 }
 ```
 
-### **utf8_of_locale**
-Writes at the address given by `buffer` (when not NULL) up to `count` 
-characters converted from the locale encoded characters of the 
-zero-terminated string `s`. Partial sequences are not converted.  
-Returns the number of non-zero bytes converted (even if `buffer` 
-is NULL).  
-Returns 0 if the string `s` is empty ("\0").  
-Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
-Returns (size_t)-1 if `s` can't convert to valid UTF-8.
