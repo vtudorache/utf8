@@ -4,9 +4,9 @@
 This is a small library for UTF-8 translations written in C. I've started 
 this work because I've always found annoying to use directly the standard 
 C library functions `mbstowcs`, `wcstombs` and the like to convert a locally 
-encoded string to UTF-8, especially on Windows.  
+encoded string to and from UTF-8, especially on Windows.  
 The conversion functions act in the same way as the standard C library 
-functions: passing a NULL pointer for the destination buffer makes the 
+traditional functions: passing a NULL pointer for the destination buffer makes the 
 function return the number of destination units (`char` or `wchar_t`) needed
 for the destination buffer, *excluding* the final 0. If the destination 
 pointer is not NULL, the terminator is added if and only if it is present 
