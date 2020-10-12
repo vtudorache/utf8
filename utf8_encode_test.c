@@ -19,6 +19,7 @@ int main(int argc, char **argv)
             written = utf8_encode(s, rune);
             if (written == 0) {
                 printf("The value 0x%0x isn't a valid rune.\n", rune);
+                i++;
                 continue;
             }
             s[written] = 0;
