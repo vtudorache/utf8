@@ -12,6 +12,10 @@ int main(int argc, char **argv)
 #if defined(_WIN32)
     puts("This example fully works only in UTF-8 enabled consoles.");
 #endif
+    if (argc < 2) {
+        printf("Usage:\n%s <string>\n", argv[0]);
+        return -EINVAL;
+    }
     while (i < argc) {
         s = argv[i];
         while (*s != 0) {
