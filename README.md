@@ -102,6 +102,37 @@ valid).
 
 #include "utf8.h"
 
+static int32_t hex2rune(char *s)
+{
+    int32_t rune = 0;
+    int d, i = 0; 
+    while (s[i] != 0) {
+        d = s[i];
+        if (d == '0' && i == 0) {
+            i++;
+            continue;
+        }
+        if ((d == 'x' || d == 'X') && i == 1) {
+            i++;
+            continue;
+        }
+        if (d >= '0' && d <= '9') {
+            d -= '0';
+        } else if (d >= 'a' && d <= 'f') {
+            d -= 'a';
+            d += 10;
+        } else if (d >= 'A' && d <= 'F') {
+            d -= 'A';
+            d += 10;
+        } else {
+            break;
+        }
+        rune = (rune << 4) | d;
+        i++;
+    }
+    return rune;
+}
+
 int main(int argc, char **argv)
 {
     int i = 1;
@@ -118,17 +149,21 @@ int main(int argc, char **argv)
             return -ENOMEM;
         }
         p = s;
+    } else {
+        printf("Usage:\n%s <hex_code_1> <hex_code_2> ... <hex_code_n>\n", argv[0]);
+        return -EINVAL;
     }
     while (i < argc) {
-        rune = atoi(argv[i]);
+        rune = hex2rune(argv[i]);
         if (rune > 0) {
             written = utf8_encode(p, rune);
             if (written == 0) {
-                fprintf(stderr, "The value 0x%0x isn't a valid rune.\n", 
+                fprintf(stderr, "The value 0x%0x isn't a valid code point.\n", 
                     rune);
                 i++;
                 continue;
             }
+            printf("Got code point 0x%x.\n", rune);
             p = &p[written];
         }
         i++;
