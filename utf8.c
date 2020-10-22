@@ -61,6 +61,47 @@ size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)
 }
 
 /*
+Gets the next rune in the readable stream `input`.
+Returns the rune.
+Returns 0xfffd if the first characters in stream don't form a valid UTF-8 
+sequence or another error occured.  
+Returns (size_t)-1 if the end-of-file has been reached.
+The variable `errno` is set to EILSEQ if an invalid or incomplete sequence 
+was found, or to the last error code set by the standard library function 
+`fgetc`.
+*/
+int32_t utf8_get_rune(FILE *input)
+{
+    size_t n_bytes, n_cont = 0; /* number of continuation bytes */
+    int read;
+    int32_t first, value = 0;
+    if ((first = fgetc(input)) == EOF) return (size_t)-1;
+    if ((0xc0 & first) == 0x80) {
+        errno = EILSEQ;
+        return 0xfffd;
+    }
+    if ((0x80 & first) == 0) return first;
+    while (0x40 & first) {
+        read = fgetc(input);
+        n_cont++;
+        if (read == EOF || n_cont >= 4 || (0xc0 & read) != 0x80) {
+            ungetc(read, input);
+            errno = EILSEQ;
+            return 0xfffd;
+        }
+        value = (value << 6) | (0x3f & read);
+        first <<= 1;
+    }
+    value |= (0x7f & first) << (5 * n_cont);
+    n_bytes = n_cont + 1;
+    if (utf8[n_bytes].hi < value || value < utf8[n_bytes].lo) {
+        errno = EILSEQ;
+        return 0xfffd;
+    }
+    return value;
+}
+
+/*
 Writes at the address given by `p` the UTF-8 sequence encoding `rune`.
 Returns the number of characters used, even if `p` is NULL.
 Returns 0 if `rune` is not a valid code point (the surrogate range is not
@@ -86,6 +127,39 @@ size_t utf8_encode(char *p, int32_t rune)
         }
     }
     return n_bytes;
+}
+
+/*
+Puts in the writable stream `output` the UTF-8 bytes encoding `rune`.
+Returns the value of `rune` in the absence of error.
+Returns (size_t)-1 if the operation fails. The `errno` variable is set to
+EILSEQ if `rune` isn't a valid code point or to the last error code set by
+the standard library function `fputc`.
+*/
+int32_t utf8_put_rune(int32_t rune, FILE *output)
+{
+    size_t i, n_bytes = 0;
+    int32_t done = rune;
+    while (n_bytes < sizeof(utf8)) {
+        if (utf8[n_bytes].lo <= rune && rune <= utf8[n_bytes].hi) break;
+        n_bytes++;
+    }
+    if (n_bytes < 1 || n_bytes >= sizeof(utf8)) {
+        errno = EILSEQ;
+        return (size_t)-1;
+    }
+    if (n_bytes == 1) {
+        if (fputc(rune, output) == EOF) return (size_t)-1;
+    } else {
+        for (i = n_bytes - 1; i > 0; i--) {
+            if (fputc(0x80 | (0x3f & rune), output) == EOF) 
+                return (size_t)-1;
+            rune >>= 6;
+        }
+        if (fputc((0xf00 >> n_bytes) | rune, output) == EOF) 
+            return (size_t)-1;
+    }
+    return done;
 }
 
 #if defined(_WIN32)
