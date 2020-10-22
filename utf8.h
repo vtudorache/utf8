@@ -1,9 +1,35 @@
 #ifndef __VT_UTF8_H__
 #define __VT_UTF8_H__
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <wchar.h>
+
+/*
+utf8_get_rune
+-------------------
+Gets the next rune in the readable stream `input`.
+Returns the rune.
+Returns 0xfffd if the first characters in stream don't form a valid UTF-8 
+sequence or another error occured.  
+Returns (size_t)-1 if the end-of-file has been reached.
+The variable `errno` is set to EILSEQ if an invalid or incomplete sequence 
+was found, or to the last error code set by the standard library function 
+`fgetc`.
+*/
+int32_t utf8_get_rune(FILE *input);
+
+/*
+utf8_put_rune
+-------------------
+Puts in the writable stream `output` the UTF-8 bytes encoding `rune`.
+Returns the value of `rune` in the absence of error.
+Returns (size_t)-1 if the operation fails. The `errno` variable is set to
+EILSEQ if `rune` isn't a valid code point or to the last error code set by
+the standard library function `fputc`.
+*/
+int32_t utf8_put_rune(int32_t rune, FILE *output);
 
 /*
 utf8_decode
