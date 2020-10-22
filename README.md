@@ -4,24 +4,26 @@
 This is a small library for UTF-8 translations written in C. I've started 
 this work because I've always found annoying to use directly the standard 
 C library functions `mbstowcs`, `wcstombs` and the like to convert a locally 
-encoded string to and from UTF-8, especially on Windows.  
+encoded string to UTF-8, especially on Windows.  
 The conversion functions act in the same way as the standard C library 
-traditional functions: passing a NULL pointer for the destination buffer makes the 
+functions: passing a NULL pointer for the destination buffer makes the 
 function return the number of destination units (`char` or `wchar_t`) needed
 for the destination buffer, *excluding* the final 0. If the destination 
 pointer is not NULL, the terminator is added if and only if it is present 
 in the source. But a 0 string terminator can easily be added manually as 
-shown in the examples below.  
+shown in the examples below.
 The functions `utf8_to_wchars` and `utf8_of_wchars` convert to and from the
-platform-specific wide characters (that is, UTF-32 on Unix and UTF-16 on 
-Windows).  
-The functions `utf8_to_locale` and `utf8_of_locale` convert to and
-from the local character set (code page). If the current locale uses
+platform-specific wide characters (that is UTF-32 on Unix and UTF-16 on 
+Windows). The functions `utf8_to_locale` and `utf8_of_locale` convert to and
+from the local character set (code page). If the current locale setting use
 UTF-8 these functions are not needed. They work however on Unix (and Linux)
-allowing the use of UTF-8 in any application even when the local code page is
+allowing the use of UTF-8 in an application even when the local code page is
 ISO/ANSI.
 
 ## Index
+[`int32_t utf8_get_rune(FILE *input)`](https://github.com/vtudorache/utf8#utf8_get_rune)  
+[`int32_t utf8_put_rune(int32_t rune, FILE *output)`](https://github.com/vtudorache/utf8#utf8_put_rune)
+
 [`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](https://github.com/vtudorache/utf8#utf8_decode)  
 [`size_t utf8_encode(char *p, int32_t rune)`](https://github.com/vtudorache/utf8#utf8_encode)  
 [`size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#utf8_to_wchars)  
@@ -32,13 +34,32 @@ ISO/ANSI.
 ## Examples
 [`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](https://github.com/vtudorache/utf8#example-utf8_decode)  
 [`size_t utf8_encode(char *p, int32_t rune)`](https://github.com/vtudorache/utf8#example-utf8_encode)  
-[`size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_to_wchars)  
-[`size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_wchars)  
 [`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_to_locale)  
 [`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_locale)  
 
 ## Source
-[utf8.c](https://github.com/vtudorache/utf8/blob/main/utf8.c)  
+[`utf8.c`](https://github.com/vtudorache/utf8/blob/main/utf8.c)  
+
+### **utf8_get_rune**  
+`int32_t utf8_get_rune(FILE *input)`
+
+Gets the next rune in the readable stream `input`.
+Returns the rune.
+Returns 0xfffd if the first characters in stream don't form a valid UTF-8 
+sequence or another error occured.  
+Returns (size_t)-1 if the end-of-file has been reached.
+The variable `errno` is set to EILSEQ if an invalid or incomplete sequence 
+was found, or to the last error code set by the standard library function 
+`fgetc`.
+
+### **utf8_put_rune**  
+`int32_t utf8_put_rune(int32_t rune, FILE *output)`
+
+Puts in the writable stream `output` the UTF-8 bytes encoding `rune`.
+Returns the value of `rune` in the absence of error.
+Returns (size_t)-1 if the operation fails. The `errno` variable is set to
+EILSEQ if `rune` isn't a valid code point or to the last error code set by
+the standard library function `fputc`.
 
 ### **utf8_decode**
 `size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`
@@ -66,10 +87,6 @@ int main(int argc, char **argv)
 #if defined(_WIN32)
     puts("This example fully works only in UTF-8 enabled consoles.");
 #endif
-    if (argc < 2) {
-        printf("Usage:\n%s <string>\n", argv[0]);
-        return -EINVAL;
-    }
     while (i < argc) {
         s = argv[i];
         while (*s != 0) {
@@ -154,7 +171,7 @@ int main(int argc, char **argv)
         }
         p = s;
     } else {
-        printf("Usage:\n%s <hex_code_1> <hex_code_2> ... <hex_code_n>\n", argv[0]);
+        printf("Usage:\n%s <code_1> <code_2> ... <code_n>\n", argv[0]);
         return -EINVAL;
     }
     while (i < argc) {
@@ -188,12 +205,9 @@ characters converted from the valid UTF-8 characters of the zero-terminated
 string `s`. Partial sequences are not converted.  
 Returns the number of non-zero wide characters converted (even if `buffer` 
 is NULL).  
-Returns 0 if the string `s` is empty (`"\0"`).  
+Returns 0 if the string `s` is empty ("\0").  
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
-Returns `(size_t)-1` if `s`contains invalid UTF-8 sequences.
-
-#### **Example (utf8_to_wchars)**
-```/* work in progress */```
+Returns (size_t)-1 if `s`contains invalid UTF-8 sequences.
 
 ### **utf8_of_wchars**
 `size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`
@@ -203,12 +217,9 @@ characters converted from the wide characters of the zero-terminated wide
 string `p`. Partial sequences are not converted.  
 Returns the number of non-zero bytes converted (even if `buffer` 
 is NULL).  
-Returns 0 if the string `p` is empty (`"\0"`).  
+Returns 0 if the string `p` is empty ("\0").  
 Returns 0 and sets the global variable `errno` to EINVAL if `p` is NULL.  
-Returns `(size_t)-1` if `p` can't convert to valid UTF-8.
-
-#### **Example (utf8_of_wchars)**
-```/* work in progress */```
+Returns (size_t)-1 if `p` can't convert to valid UTF-8.
 
 ### **utf8_to_locale**
 `size_t utf8_to_locale(char *buffer, const char *s, size_t count)`
@@ -218,12 +229,9 @@ locale encoded characters converted from the UTF-8 characters of the
 zero-terminated string `s`. Partial sequences are not converted.  
 Returns the number of non-zero bytes converted (even if `buffer` 
 is NULL).  
-Returns 0 if the string `s` is empty (`"\0"`).  
+Returns 0 if the string `s` is empty ("\0").  
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
-Returns `(size_t)-1` if `s` can't convert to valid UTF-8.
-
-#### **Example (utf8_to_locale)**
-See [`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_locale).
+Returns (size_t)-1 if `s` can't convert to valid UTF-8.
 
 ### **utf8_of_locale**
 `size_t utf8_of_locale(char *buffer, const char *s, size_t count)`
@@ -233,9 +241,9 @@ characters converted from the locale encoded characters of the
 zero-terminated string `s`. Partial sequences are not converted.  
 Returns the number of non-zero bytes converted (even if `buffer` 
 is NULL).  
-Returns 0 if the string `s` is empty (`"\0"`).  
+Returns 0 if the string `s` is empty ("\0").  
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
-Returns `(size_t)-1` if `s` can't convert to valid UTF-8.
+Returns (size_t)-1 if `s` can't convert to valid UTF-8.
 
 #### **Example (utf8_of_locale)**
 ```
@@ -306,4 +314,3 @@ int main(int argc, char **argv)
     return argc - i;
 }
 ```
-
