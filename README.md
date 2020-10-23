@@ -37,7 +37,7 @@ ISO/ANSI.
 [`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](#example-utf8_of_locale)  
 
 ## Source
-[`utf8.c`](https://gitlab.com/vtudorache/utf8/-/blob/master/utf8.c)  
+[`utf8.c`](https://github.com/vtudorache/utf8/blob/main/utf8.c)  
 
 ### **utf8_get_rune**  
 `int32_t utf8_get_rune(FILE *input)`
