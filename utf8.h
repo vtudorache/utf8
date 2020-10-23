@@ -34,7 +34,8 @@ int32_t utf8_put_rune(int32_t rune, FILE *output);
 /*
 utf8_get_bytes
 --------------
-Fills `buffer` with the UTF-8 sequences read from the stream `input`.
+Fills at most `buffer_size` bytes of `buffer` (including the final 0) with 
+the UTF-8 sequences read from the stream `input`.
 Replaces the invalid sequences found in `input` with `0xfffd`.
 The write process stops when there's no more room left in `buffer`, when
 an end-of-line or end-of-file is found.
