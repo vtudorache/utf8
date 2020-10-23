@@ -52,7 +52,7 @@ int main(int argc, char **argv)
         }
         p = s;
     } else {
-        printf("Usage:\n%s <hex_code_1> <hex_code_2> ... <hex_code_n>\n", argv[0]);
+        printf("Usage:\n%s <code_1> <code_2> ... <code_n>\n", argv[0]);
         return -EINVAL;
     }
     while (i < argc) {

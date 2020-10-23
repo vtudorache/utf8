@@ -17,11 +17,13 @@ int main(int argc, char **argv)
         if (n == 0) continue;
         if (n == (size_t)-1) {
             printf("The string \"%s\" isn't valid UTF-8.\n", argv[i]);
-            printf("Trying to convert from locale...\n");
+            printf("Trying to convert from locale... ");
             n = utf8_of_locale(NULL, argv[i], (size_t)-1);
             if (n == (size_t)-1) {
-                printf("Can't convert \"%s\" to UTF-8.\n", argv[i]);
+                puts("can't convert to UTF-8.\n");
                 continue;
+            } else {
+                puts("done.");
             }
             s = (char *)malloc((n + 1) * sizeof(char));
             if (s == NULL) {

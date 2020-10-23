@@ -1,10 +1,10 @@
 # utf8
 
 ## Overview
-This is a small library for UTF-8 translations written in C. I've started 
-this work because I've always found annoying to use directly the standard 
-C library functions `mbstowcs`, `wcstombs` and the like to convert a locally 
-encoded string to UTF-8, especially on Windows.  
+This is a small library for reading and converting to and from UTF-8 written 
+in C. I've started this work because I've always found annoying to use directly 
+the standard C library functions `mbstowcs`, `wcstombs` and the like to convert 
+a locally encoded string to UTF-8, especially on Windows.  
 The conversion functions act in the same way as the standard C library 
 functions: passing a NULL pointer for the destination buffer makes the 
 function return the number of destination units (`char` or `wchar_t`) needed
@@ -21,24 +21,23 @@ allowing the use of UTF-8 in an application even when the local code page is
 ISO/ANSI.
 
 ## Index
-[`int32_t utf8_get_rune(FILE *input)`](https://github.com/vtudorache/utf8#utf8_get_rune)  
-[`int32_t utf8_put_rune(int32_t rune, FILE *output)`](https://github.com/vtudorache/utf8#utf8_put_rune)
+[`int32_t utf8_get_rune(FILE *input)`](#utf8_get_rune)  
+[`int32_t utf8_put_rune(int32_t rune, FILE *output)`](#utf8_put_rune)
 
-[`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](https://github.com/vtudorache/utf8#utf8_decode)  
-[`size_t utf8_encode(char *p, int32_t rune)`](https://github.com/vtudorache/utf8#utf8_encode)  
-[`size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#utf8_to_wchars)  
-[`size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`](https://github.com/vtudorache/utf8#utf8_of_wchars)  
-[`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#utf8_to_locale)  
-[`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#utf8_of_locale)  
+[`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](#utf8_decode)  
+[`size_t utf8_encode(char *p, int32_t rune)`](#utf8_encode)  
+[`size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)`](#utf8_to_wchars)  
+[`size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`](#utf8_of_wchars)  
+[`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`](#utf8_to_locale)  
+[`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](#utf8_of_locale)  
 
 ## Examples
-[`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](https://github.com/vtudorache/utf8#example-utf8_decode)  
-[`size_t utf8_encode(char *p, int32_t rune)`](https://github.com/vtudorache/utf8#example-utf8_encode)  
-[`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_to_locale)  
-[`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](https://github.com/vtudorache/utf8#example-utf8_of_locale)  
+[`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](#example-utf8_decode)  
+[`size_t utf8_encode(char *p, int32_t rune)`](#example-utf8_encode)  
+[`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](#example-utf8_of_locale)  
 
 ## Source
-[`utf8.c`](https://github.com/vtudorache/utf8/blob/main/utf8.c)  
+[`utf8.c`](https://gitlab.com/vtudorache/utf8/-/blob/master/utf8.c)  
 
 ### **utf8_get_rune**  
 `int32_t utf8_get_rune(FILE *input)`
