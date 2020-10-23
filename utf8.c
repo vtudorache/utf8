@@ -128,6 +128,7 @@ size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)
             }
         }
         i += utf8_encode(&buffer[i], rune);
+        if (rune == '\n') break;
     }
     buffer[i] = '\0';
     return i;
