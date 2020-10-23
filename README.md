@@ -24,8 +24,12 @@ ISO/ANSI.
 [`int32_t utf8_get_rune(FILE *input)`](#utf8_get_rune)  
 [`int32_t utf8_put_rune(int32_t rune, FILE *output)`](#utf8_put_rune)
 
+[`size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)`](#utf8_get_bytes)  
+[`size_t utf8_put_bytes(char *buffer, FILE *output)`](#utf8_put_bytes)
+
 [`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](#utf8_decode)  
-[`size_t utf8_encode(char *p, int32_t rune)`](#utf8_encode)  
+[`size_t utf8_encode(char *p, int32_t rune)`](#utf8_encode)
+
 [`size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)`](#utf8_to_wchars)  
 [`size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`](#utf8_of_wchars)  
 [`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`](#utf8_to_locale)  
@@ -56,6 +60,24 @@ was found, or to the last error code set by the standard library function
 
 Puts in the writable stream `output` the UTF-8 bytes encoding `rune`.
 Returns the value of `rune` in the absence of error.
+Returns (size_t)-1 if the operation fails. The `errno` variable is set to
+EILSEQ if `rune` isn't a valid code point or to the last error code set by
+the standard library function `fputc`.
+
+### **utf8_get_bytes**
+`size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)`
+
+Fills `buffer` with the UTF-8 sequences read from the stream `input`.  
+Replaces the invalid sequences found in `input` with `0xfffd`.  
+The write process stops when there's no more room left in `buffer`, when
+an end-of-line or end-of-file is found.  
+Returns the number of bytes put in `buffer`.
+
+### **utf8_put_bytes**
+`size_t utf8_put_bytes(char *buffer, FILE *output)`
+
+Puts in the writable stream `output` the UTF-8 bytes encoding `rune`.  
+Returns the value of `rune` in the absence of error.  
 Returns (size_t)-1 if the operation fails. The `errno` variable is set to
 EILSEQ if `rune` isn't a valid code point or to the last error code set by
 the standard library function `fputc`.

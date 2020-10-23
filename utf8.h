@@ -32,6 +32,30 @@ the standard library function `fputc`.
 int32_t utf8_put_rune(int32_t rune, FILE *output);
 
 /*
+utf8_get_bytes
+--------------
+Fills `buffer` with the UTF-8 sequences read from the stream `input`.
+Replaces the invalid sequences found in `input` with `0xfffd`.
+The write process stops when there's no more room left in `buffer`, when
+an end-of-line or end-of-file is found.
+Returns the number of bytes put in `buffer`.
+*/
+size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input);
+
+/*
+utf8_put_bytes
+--------------
+Writes to the stream `output` the UTF-8 sequences found in `buffer`, only
+if `buffer` contains a valid UTF-8 string.
+Returns 0 and sets `errno` to EINVAL if `buffer` or `output` are NULL.
+Returns (size_t)-1 and sets `errno` to EILSEQ if `buffer` contains invalid 
+sequences.
+Returns (size_t)-1 and propagate the value of `errno` set by `fputs` when 
+another error is found.
+*/
+size_t utf8_put_bytes(char *buffer, FILE *output);
+
+/*
 utf8_decode
 -----------
 Writes at the address given by `rune` the code point obtained from parsing
