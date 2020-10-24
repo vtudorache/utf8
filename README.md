@@ -1,3 +1,9 @@
+<style>
+    p { 
+        text-align: justify; 
+    }
+</style>
+
 # utf8
 
 ## Overview
