@@ -6,7 +6,7 @@ in C. I've started this work because I've always found annoying to use directly
 the standard C library functions `mbstowcs`, `wcstombs` and the like to convert 
 a locally encoded string to UTF-8, especially on Windows.  
 The conversion functions act in the same way as the standard C library 
-functions: passing a NULL pointer for the destination buffer makes the 
+functions: passing a `NULL` pointer for the destination buffer makes the 
 function return the number of destination units (`char` or `wchar_t`) needed
 for the destination buffer, *excluding* the final 0. If the destination 
 pointer is not NULL, the terminator is added if and only if it is present 
@@ -51,7 +51,7 @@ Returns the rune.
 Returns `0xfffd` if the first characters in stream don't form a valid UTF-8 
 sequence or another error occured.  
 Returns `(size_t)-1` if the end-of-file has been reached.
-The variable `errno` is set to EILSEQ if an invalid or incomplete sequence 
+The variable `errno` is set to `EILSEQ` if an invalid or incomplete sequence 
 was found, or to the last error code set by the standard library function 
 `fgetc`.
 
@@ -88,7 +88,7 @@ the standard library function `fputc`.
 
 Writes at the address given by `rune` the code point obtained from parsing
 at most `n_bytes` characters of the zero-terminated string `s`.  
-Returns the number of characters parsed, even when `rune` is NULL.  
+Returns the number of characters parsed, even when `rune` is `NULL`.  
 Returns `0` if the first characters within `n_bytes` don't form a valid UTF-8 
 sequence or the resulting code point is invalid.  
 The source pointer `s` can't be `NULL`.  
