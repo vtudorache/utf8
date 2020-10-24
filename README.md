@@ -94,7 +94,7 @@ sequence or the resulting code point is invalid.
 The source pointer `s` can't be `NULL`.  
 
 #### **Example (utf8_decode)**
-```C
+```
 #include <stdio.h>
 #include <stdint.h>
 
@@ -138,7 +138,7 @@ Returns `0` if `rune` is not a valid code point (the surrogate range is
 considered invalid).  
 
 #### **Example (utf8_encode)**
-```C
+```
 #include <errno.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -268,7 +268,7 @@ Returns `0` and sets the global variable `errno` to `EINVAL` if `s` is `NULL`.
 Returns `(size_t)-1` if `s` can't convert to valid UTF-8.
 
 #### **Example (utf8_of_locale)**
-```C
+```
 #include <locale.h>
 #include <stdio.h>
 
