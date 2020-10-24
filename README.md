@@ -31,13 +31,15 @@ ISO/ANSI.
 [`size_t utf8_encode(char *p, int32_t rune)`](#utf8_encode)
 
 [`size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)`](#utf8_to_wchars)  
-[`size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`](#utf8_of_wchars)  
+[`size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`](#utf8_of_wchars)
+
 [`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`](#utf8_to_locale)  
 [`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](#utf8_of_locale)  
 
 ## Examples
 [`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](#example-utf8_decode)  
-[`size_t utf8_encode(char *p, int32_t rune)`](#example-utf8_encode)  
+[`size_t utf8_encode(char *p, int32_t rune)`](#example-utf8_encode)
+
 [`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](#example-utf8_of_locale)  
 
 ## Source
