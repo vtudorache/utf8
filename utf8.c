@@ -120,7 +120,7 @@ size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)
     }
     while (buffer_size > i + 4) {
         rune = utf8_get_rune(input);
-        if (rune == (size_t)-1) break;
+        if (rune == -1) break;
         if (rune == '\r') {
             rune = utf8_get_rune(input);
             if (rune != '\n') {
