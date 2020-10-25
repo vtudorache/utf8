@@ -75,7 +75,7 @@ int32_t utf8_get_rune(FILE *input)
     size_t n_bytes, n_cont = 0; /* number of continuation bytes */
     int read;
     int32_t first, value = 0;
-    if ((first = getc(input)) == EOF) return (size_t)-1;
+    if ((first = getc(input)) == EOF) return -1;
     if ((0xc0 & first) == 0x80) {
         errno = EILSEQ;
         return 0xfffd;
@@ -180,18 +180,18 @@ int32_t utf8_put_rune(int32_t rune, FILE *output)
     }
     if (n_bytes < 1 || n_bytes >= sizeof(utf8)) {
         errno = EILSEQ;
-        return (size_t)-1;
+        return -1;
     }
     if (n_bytes == 1) {
-        if (putc(rune, output) == EOF) return (size_t)-1;
+        if (putc(rune, output) == EOF) return -1;
     } else {
         for (i = n_bytes - 1; i > 0; i--) {
             if (putc(0x80 | (0x3f & rune), output) == EOF) 
-                return (size_t)-1;
+                return -1;
             rune >>= 6;
         }
         if (putc((0xf00 >> n_bytes) | rune, output) == EOF) 
-            return (size_t)-1;
+            return -1;
     }
     return done;
 }
