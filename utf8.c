@@ -113,7 +113,8 @@ size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)
 {
     int32_t rune;
     size_t i = 0;
-    if (buffer == NULL || input == NULL) {
+    if (buffer_size == 0 || input == NULL) return 0;
+    if (buffer == NULL) {
         errno = EINVAL;
         return 0;
     }
@@ -130,7 +131,7 @@ size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)
         i += utf8_encode(&buffer[i], rune);
         if (rune == '\n') break;
     }
-    if (i > 0) buffer[i] = '\0';
+    buffer[i] = '\0';
     return i;
 }
 
