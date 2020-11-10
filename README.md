@@ -74,6 +74,7 @@ the UTF-8 sequences taken from the stream `input`.
 Replaces the invalid sequences found in `input` with `0xfffd`.  
 The process stops when there's no more room left in `buffer` or when an
 end-of-line or end-of-file is found.  
+Translates `\r\n` to `\n`.  
 Returns the number of bytes put in `buffer`, excluding the final `'\0'`.
 
 ### **utf8_put_bytes**
