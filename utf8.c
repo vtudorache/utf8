@@ -107,6 +107,7 @@ the UTF-8 sequences read from the stream `input`.
 Replaces the invalid sequences found in `input` with `0xfffd`.
 The write process stops when there's no more room left in `buffer`, when
 an end-of-line or end-of-file is found.
+Translates `\r\n` to `\n`.
 Returns the number of bytes put in `buffer`, excluding the final '\0'.
 */
 size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)
@@ -122,7 +123,7 @@ size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)
         rune = utf8_get_rune(input);
         if (rune == -1) break;
         if (rune == '\r') {
-            rune = utf8_get_rune(input);
+            rune = getc(input);
             if (rune != '\n') {
                 ungetc(rune, input);
                 rune = '\n';
