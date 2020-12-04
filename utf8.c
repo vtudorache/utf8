@@ -84,8 +84,8 @@ int32_t utf8_get_rune(FILE *input)
     while (0x40 & first) {
         read = getc(input);
         n_cont++;
-        if (read == EOF || n_cont >= 4 || (0xc0 & read) != 0x80) {
-            ungetc(read, input);
+        if (n_cont >= 4 || (0xc0 & read) != 0x80) {
+            if (read != EOF) ungetc(read, input);
             errno = EILSEQ;
             return 0xfffd;
         }
