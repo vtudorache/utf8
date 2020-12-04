@@ -125,7 +125,7 @@ size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)
         if (rune == '\r') {
             rune = getc(input);
             if (rune != '\n') {
-                ungetc(rune, input);
+                if (rune != EOF) ungetc(rune, input);
                 rune = '\n';
             }
         }
