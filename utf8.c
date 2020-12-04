@@ -84,8 +84,8 @@ int32_t utf8_get_rune(FILE *input)
     while (0x40 & first) {
         read = getc(input);
         n_cont++;
-        if (n_cont >= 4 || (0xc0 & read) != 0x80) {
-            if (read != EOF) ungetc(read, input);
+        if (read == EOF || n_cont >= 4 || (0xc0 & read) != 0x80) {
+            ungetc(read, input);
             errno = EILSEQ;
             return 0xfffd;
         }
@@ -107,7 +107,7 @@ the UTF-8 sequences read from the stream `input`.
 Replaces the invalid sequences found in `input` with `0xfffd`.
 The write process stops when there's no more room left in `buffer`, when
 an end-of-line or end-of-file is found.
-Translates `\r\n` to `\n`.
+Translates `\r` and `\r\n` to `\n`.
 Returns the number of bytes put in `buffer`, excluding the final '\0'.
 */
 size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)
@@ -125,7 +125,7 @@ size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)
         if (rune == '\r') {
             rune = getc(input);
             if (rune != '\n') {
-                if (rune != EOF) ungetc(rune, input);
+                ungetc(rune, input);
                 rune = '\n';
             }
         }
