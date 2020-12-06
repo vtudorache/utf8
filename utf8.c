@@ -75,14 +75,14 @@ int32_t utf8_get_rune(FILE *input)
     size_t n_bytes, n_cont = 0; /* number of continuation bytes */
     int read;
     int32_t first, value = 0;
-    if ((first = getc(input)) == EOF) return -1;
+    if ((first = fgetc(input)) == EOF) return -1;
     if ((0xc0 & first) == 0x80) {
         errno = EILSEQ;
         return 0xfffd;
     }
     if ((0x80 & first) == 0) return first;
     while (0x40 & first) {
-        read = getc(input);
+        read = fgetc(input);
         n_cont++;
         if (read == EOF || n_cont >= 4 || (0xc0 & read) != 0x80) {
             ungetc(read, input);
@@ -99,41 +99,6 @@ int32_t utf8_get_rune(FILE *input)
         return 0xfffd;
     }
     return value;
-}
-
-/*
-Fills at most `buffer_size` bytes of `buffer` (including the final 0) with 
-the UTF-8 sequences read from the stream `input`.
-Replaces the invalid sequences found in `input` with `0xfffd`.
-The write process stops when there's no more room left in `buffer`, when
-an end-of-line or end-of-file is found.
-Translates `\r` and `\r\n` to `\n`.
-Returns the number of bytes put in `buffer`, excluding the final '\0'.
-*/
-size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)
-{
-    int32_t rune;
-    size_t i = 0;
-    if (buffer_size == 0 || input == NULL) return 0;
-    if (buffer == NULL) {
-        errno = EINVAL;
-        return 0;
-    }
-    while (buffer_size > i + 4) {
-        rune = utf8_get_rune(input);
-        if (rune == -1) break;
-        if (rune == '\r') {
-            rune = getc(input);
-            if (rune != '\n') {
-                ungetc(rune, input);
-                rune = '\n';
-            }
-        }
-        i += utf8_encode(&buffer[i], rune);
-        if (rune == '\n') break;
-    }
-    buffer[i] = '\0';
-    return i;
 }
 
 /*
@@ -184,46 +149,17 @@ int32_t utf8_put_rune(int32_t rune, FILE *output)
         return -1;
     }
     if (n_bytes == 1) {
-        if (putc(rune, output) == EOF) return -1;
+        if (fputc(rune, output) == EOF) return -1;
     } else {
         for (i = n_bytes - 1; i > 0; i--) {
-            if (putc(0x80 | (0x3f & rune), output) == EOF) 
+            if (fputc(0x80 | (0x3f & rune), output) == EOF) 
                 return -1;
             rune >>= 6;
         }
-        if (putc((0xf00 >> n_bytes) | rune, output) == EOF) 
+        if (fputc((0xf00 >> n_bytes) | rune, output) == EOF) 
             return -1;
     }
     return done;
-}
-
-/*
-Writes to the stream `output` the UTF-8 sequences found in `buffer`, only
-if `buffer` contains a valid UTF-8 string.
-Returns 0 and sets `errno` to EINVAL if any argument is invalid.
-Returns (size_t)-1 and sets `errno` to EILSEQ if `buffer` contains invalid 
-sequences.
-Returns (size_t)-1 and propagate the value of `errno` set by `fputs` when 
-another error is found.
-*/
-size_t utf8_put_bytes(char *buffer, FILE *output)
-{
-    int32_t rune;
-    size_t i = 0, j;
-    if (buffer == NULL || output == NULL) {
-        errno = EINVAL;
-        return 0;
-    }
-    while (buffer[i] != '\0') {
-        j = utf8_decode(&rune, &buffer[i], (size_t)-1);
-        if (j < 1) {
-            errno = EILSEQ;
-            return (size_t)-1;
-        }
-        i += j;
-    }
-    if (fputs(buffer, output) == EOF) i = (size_t)-1;
-    return i;
 }
 
 #if defined(_WIN32)
@@ -330,7 +266,7 @@ size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)
     return done;
 }
 
-size_t utf8_to_locale(char *buffer, const char *s, size_t count)
+size_t utf8_to_local(char *buffer, const char *s, size_t count)
 {
     int32_t rune[2] = {0, 0};
     /*
@@ -362,7 +298,7 @@ size_t utf8_to_locale(char *buffer, const char *s, size_t count)
     return done;
 }
 
-size_t utf8_of_locale(char *buffer, const char *s, size_t count)
+size_t utf8_of_local(char *buffer, const char *s, size_t count)
 {
     int32_t rune;
     wchar_t ws_buffer[2] = {0, 0};
@@ -434,7 +370,7 @@ size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)
     return done;
 }
 
-size_t utf8_to_locale(char *buffer, const char *s, size_t count)
+size_t utf8_to_local(char *buffer, const char *s, size_t count)
 {
     int32_t rune[2] = {0, 0};
     size_t done = 0, parsed, mb_size;
@@ -459,7 +395,7 @@ size_t utf8_to_locale(char *buffer, const char *s, size_t count)
     return done;
 }
 
-size_t utf8_of_locale(char *buffer, const char *s, size_t count)
+size_t utf8_of_local(char *buffer, const char *s, size_t count)
 {
     wchar_t ws_buffer[2] = {0, 0};
     size_t done = 0, mb_size, ws_size, rune_size;

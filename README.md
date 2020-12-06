@@ -14,7 +14,7 @@ in the source. But the `'\0'` string terminator can easily be added manually.
 The functions `utf8_to_wchars` and `utf8_of_wchars` convert to and from the
 platform-specific wide characters (that is, UTF-32 on Unix and UTF-16 on 
 Windows).  
-The functions `utf8_to_locale` and `utf8_of_locale` convert to and
+The functions `utf8_to_local` and `utf8_of_local` convert to and
 from the local character set (code page). If the current locale setting use
 UTF-8 these functions are not needed. They work however on Unix (and Linux)
 allowing the use of UTF-8 in an application even when the local code page is
@@ -24,23 +24,20 @@ ISO/ANSI.
 [`int32_t utf8_get_rune(FILE *input)`](#utf8_get_rune)  
 [`int32_t utf8_put_rune(int32_t rune, FILE *output)`](#utf8_put_rune)
 
-[`size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)`](#utf8_get_bytes)  
-[`size_t utf8_put_bytes(char *buffer, FILE *output)`](#utf8_put_bytes)
-
 [`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](#utf8_decode)  
 [`size_t utf8_encode(char *p, int32_t rune)`](#utf8_encode)
 
 [`size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)`](#utf8_to_wchars)  
 [`size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)`](#utf8_of_wchars)
 
-[`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`](#utf8_to_locale)  
-[`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](#utf8_of_locale)  
+[`size_t utf8_to_local(char *buffer, const char *s, size_t count)`](#utf8_to_local)  
+[`size_t utf8_of_local(char *buffer, const char *s, size_t count)`](#utf8_of_local)  
 
 ## Examples
 [`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](#example-utf8_decode)  
 [`size_t utf8_encode(char *p, int32_t rune)`](#example-utf8_encode)
 
-[`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`](#example-utf8_of_locale)  
+[`size_t utf8_of_local(char *buffer, const char *s, size_t count)`](#example-utf8_of_local)  
 
 ## Source
 [`utf8.c`](https://github.com/vtudorache/utf8/blob/main/utf8.c)  
@@ -62,26 +59,6 @@ was found, or to the last error code set by the standard library function
 
 Puts to the writable stream `output` the UTF-8 bytes encoding `rune`.
 Returns the value of `rune` in the absence of error.
-Returns `(size_t)-1` if the operation fails. The `errno` variable is set to
-`EILSEQ` if `rune` isn't a valid code point or to the last error code set by
-the standard library function `fputc`.
-
-### **utf8_get_bytes**
-`size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input)`
-
-Reads at most `buffer_size` bytes of `buffer` (including the final `'\0'`) of 
-the UTF-8 sequences taken from the stream `input`.  
-Replaces the invalid sequences found in `input` with `0xfffd`.  
-The process stops when there's no more room left in `buffer` or when an
-end-of-line or end-of-file is found.  
-Translates `\r` and `\r\n` to `\n`.  
-Returns the number of bytes put in `buffer`, excluding the final `'\0'`.
-
-### **utf8_put_bytes**
-`size_t utf8_put_bytes(char *buffer, FILE *output)`
-
-Puts in the writable stream `output` the UTF-8 bytes encoding `rune`.  
-Returns the value of `rune` in the absence of error.  
 Returns `(size_t)-1` if the operation fails. The `errno` variable is set to
 `EILSEQ` if `rune` isn't a valid code point or to the last error code set by
 the standard library function `fputc`.
@@ -246,8 +223,8 @@ Returns `0` if the string `p` is empty (`"\0"`).
 Returns `0` and sets the global variable `errno` to `EINVAL` if `p` is `NULL`.  
 Returns `(size_t)-1` if `p` can't convert to valid UTF-8.
 
-### **utf8_to_locale**
-`size_t utf8_to_locale(char *buffer, const char *s, size_t count)`
+### **utf8_to_local**
+`size_t utf8_to_local(char *buffer, const char *s, size_t count)`
 
 Writes at the address given by `buffer` (when not `NULL`) up to `count` 
 locale encoded characters converted from the UTF-8 characters of the 
@@ -258,8 +235,8 @@ Returns `0` if the string `s` is empty (`"\0"`).
 Returns `0` and sets the global variable `errno` to `EINVAL` if `s` is `NULL`.  
 Returns `(size_t)-1` if `s` can't convert to valid UTF-8.
 
-### **utf8_of_locale**
-`size_t utf8_of_locale(char *buffer, const char *s, size_t count)`
+### **utf8_of_local**
+`size_t utf8_of_local(char *buffer, const char *s, size_t count)`
 
 Writes at the address given by `buffer` (when not `NULL`) up to `count` 
 characters converted from the locale encoded characters of the 
@@ -270,7 +247,7 @@ Returns `0` if the string `s` is empty (`"\0"`).
 Returns `0` and sets the global variable `errno` to `EINVAL` if `s` is `NULL`.  
 Returns `(size_t)-1` if `s` can't convert to valid UTF-8.
 
-#### **Example (utf8_of_locale)**
+#### **Example (utf8_of_local)**
 ```
 #include <locale.h>
 #include <stdio.h>
@@ -292,7 +269,7 @@ int main(int argc, char **argv)
         if (n == (size_t)-1) {
             printf("The string \"%s\" isn't valid UTF-8.\n", argv[i]);
             printf("Trying to convert from locale...\n");
-            n = utf8_of_locale(NULL, argv[i], (size_t)-1);
+            n = utf8_of_local(NULL, argv[i], (size_t)-1);
             if (n == (size_t)-1) {
                 printf("Can't convert \"%s\" to UTF-8.\n", argv[i]);
                 continue;
@@ -303,7 +280,7 @@ int main(int argc, char **argv)
                 return argc - i;
             }
             s_is_alloc = 1;
-            n = utf8_of_locale(s, argv[i], n + 1);
+            n = utf8_of_local(s, argv[i], n + 1);
             n = utf8_to_wchars(NULL, s, (size_t)-1);
         } else {
             s = argv[i];
@@ -323,11 +300,11 @@ int main(int argc, char **argv)
         putchar('\n');
         free(pws);
         if (s_is_alloc) {
-            n = utf8_to_locale(NULL, s, (size_t)-1);
+            n = utf8_to_local(NULL, s, (size_t)-1);
             if (n > 0) {
                 r = (char *)malloc(n + 1);
                 if (r != NULL) {
-                    n = utf8_to_locale(r, s, n + 1);
+                    n = utf8_to_local(r, s, n + 1);
                     printf("The string reconverted to locale is \"%s\".\n",
                         r);
                     free(r);

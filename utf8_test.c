@@ -18,7 +18,7 @@ int main(int argc, char **argv)
         if (n == (size_t)-1) {
             printf("The string \"%s\" isn't valid UTF-8.\n", argv[i]);
             printf("Trying to convert from locale... ");
-            n = utf8_of_locale(NULL, argv[i], (size_t)-1);
+            n = utf8_of_local(NULL, argv[i], (size_t)-1);
             if (n == (size_t)-1) {
                 puts("can't convert to UTF-8.\n");
                 continue;
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
                 return argc - i;
             }
             s_is_alloc = 1;
-            n = utf8_of_locale(s, argv[i], n + 1);
+            n = utf8_of_local(s, argv[i], n + 1);
             n = utf8_to_wchars(NULL, s, (size_t)-1);
         } else {
             s = argv[i];
@@ -51,11 +51,11 @@ int main(int argc, char **argv)
         putchar('\n');
         free(pws);
         if (s_is_alloc) {
-            n = utf8_to_locale(NULL, s, (size_t)-1);
+            n = utf8_to_local(NULL, s, (size_t)-1);
             if (n > 0) {
                 r = (char *)malloc(n + 1);
                 if (r != NULL) {
-                    n = utf8_to_locale(r, s, n + 1);
+                    n = utf8_to_local(r, s, n + 1);
                     printf("The string reconverted to locale is \"%s\".\n",
                         r);
                     free(r);

@@ -34,12 +34,11 @@ int32_t utf8_put_rune(int32_t rune, FILE *output);
 /*
 utf8_get_bytes
 --------------
-Fills at most `buffer_size` bytes of `buffer` (including the final 0) with 
-the UTF-8 sequences read from the stream `input`.
-Replaces the invalid sequences found in `input` with `0xfffd`.
+Fills `buffer` with the UTF-8 sequences read from the stream `input`.
+Replaces the invalid sequences found in `input` with `0xfffd`. At 
+most `buffer_size` bytes are written (including the final '\0').
 The write process stops when there's no more room left in `buffer`, when
 an end-of-line or end-of-file is found.
-Translates `\r` and `\r\n` to `\n`.
 Returns the number of bytes put in `buffer`, excluding the final '\0'.
 */
 size_t utf8_get_bytes(char *buffer, size_t buffer_size, FILE *input);
@@ -108,7 +107,7 @@ Returns (size_t)-1 if `p` can't convert to valid UTF-8.
 size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count);
 
 /*
-utf8_to_locale
+utf8_to_local
 --------------
 Writes at the address given by `buffer` (when not NULL) up to `count` 
 locale encoded characters converted from the UTF-8 characters of the 
@@ -119,10 +118,10 @@ Returns 0 if the string `s` is empty ("\0").
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.
 Returns (size_t)-1 if `s` can't convert to valid UTF-8.
 */
-size_t utf8_to_locale(char *buffer, const char *s, size_t count);
+size_t utf8_to_local(char *buffer, const char *s, size_t count);
 
 /*
-utf8_of_locale
+utf8_of_local
 --------------
 Writes at the address given by `buffer` (when not NULL) up to `count` 
 characters converted from the locale encoded characters of the 
@@ -133,6 +132,6 @@ Returns 0 if the string `s` is empty ("\0").
 Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.
 Returns (size_t)-1 if `s` can't convert to valid UTF-8.
 */
-size_t utf8_of_locale(char *buffer, const char *s, size_t count);
+size_t utf8_of_local(char *buffer, const char *s, size_t count);
 
 #endif
