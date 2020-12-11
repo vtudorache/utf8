@@ -233,8 +233,10 @@ size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)
             errno = EILSEQ;
             return (size_t)-1;
         }
-        rune_size = utf16_encode(buffer, rune);
-        if (rune_size > count - done || rune == 0) break;
+        rune_size = utf16_encode(NULL, rune);
+        if (rune_size > count - done) break;
+        if (buffer != NULL) utf16_encode(buffer, rune);
+        if (rune == '\0') break;
         s = &s[parsed];
         if (buffer != NULL) buffer = &buffer[rune_size];
         done += rune_size;
