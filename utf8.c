@@ -222,7 +222,6 @@ size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)
 {
     int32_t rune;
     size_t done = 0, parsed, rune_size;
-    wchar_t cache[2];
     if (s == NULL) {
         errno = EINVAL;
         return 0;
@@ -234,15 +233,11 @@ size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)
             errno = EILSEQ;
             return (size_t)-1;
         }
-        rune_size = utf16_encode(cache, rune);
-        if (rune_size > count - done) break;
-        if (buffer != NULL) {
-            *buffer++ = cache[0];
-            if (rune_size > 1) *buffer++ = cache[1];
-        }
-        if (rune == 0) break;
+        rune_size = utf16_encode(buffer, rune);
+        if (rune_size > count - done || rune == 0) break;
+        s = &s[parsed];
+        if (buffer != NULL) buffer = &buffer[rune_size];
         done += rune_size;
-        s += parsed;
     }
     return done;
 }
@@ -251,7 +246,6 @@ size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)
 {
     int32_t rune;
     size_t done = 0, parsed, rune_size;
-    char cache[4];
     if (p == NULL) {
         errno = EINVAL;
         return 0;
@@ -263,31 +257,24 @@ size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)
             errno = EILSEQ;
             return (size_t)-1;
         }
-        rune_size = utf8_encode(cache, rune);
-        if (rune_size > count - done) break;
-        if (buffer != NULL) {
-            *buffer++ = cache[0];
-            if (rune_size > 1) *buffer++ = cache[1];
-            if (rune_size > 2) *buffer++ = cache[2];
-            if (rune_size > 3) *buffer++ = cache[3];
-        }
-        if (rune == 0) break;
+        rune_size = utf8_encode(buffer, rune);
+        if (rune_size > count - done || rune == 0) break;
+        p = &p[parsed];
+        if (buffer != NULL) buffer = &buffer[rune_size];
         done += rune_size;
-        p += parsed;
     }
     return done;
 }
 
 size_t utf8_to_local(char *buffer, const char *s, size_t count)
 {
-    int32_t rune;
+    int32_t rune[2] = {0, 0};
     /*
-    I use an array of three wide chars of which the last is always 0. This 
+    I use an array of two wide chars of which the last is always 0. This 
     allows using the wcstombs function knowing that its source will always 
     end in a 0 rune.
     */
-    wchar_t ws_buffer[] = {0, 0, 0};
-    char mb_buffer[4];
+    wchar_t ws_buffer[2] = {0, 0};
     size_t done = 0, parsed, mb_size;
     if (s == NULL) {
         errno = EINVAL;
@@ -295,25 +282,18 @@ size_t utf8_to_local(char *buffer, const char *s, size_t count)
     }
     if (buffer == NULL) count = (size_t)-1;
     while (done < count) {
-        parsed = utf8_decode(&rune, s, (size_t)-1);
+        parsed = utf8_decode(rune, s, (size_t)-1);
         if (parsed == 0) {
             errno = EILSEQ;
             return (size_t)-1;
         }
-        ws_buffer[1] = 0;
-        utf16_encode(ws_buffer, rune); /* only the valid runes get here */
-        mb_size = wcstombs(mb_buffer, ws_buffer, (size_t)-1);
+        utf16_encode(ws_buffer, rune[0]); /* only the valid runes get here */
+        mb_size = wcstombs(buffer, ws_buffer, (size_t)-1);
         if (mb_size == (size_t)-1) return (size_t)-1; /* can't encode */
-        if (mb_size > count - done) break;
-        if (buffer != NULL) {
-            *buffer++ = mb_buffer[0];
-            if (mb_size > 1) *buffer++ = mb_buffer[1];
-            if (mb_size > 2) *buffer++ = mb_buffer[2];
-            if (mb_size > 3) *buffer++ = mb_buffer[3];
-        }
-        if (mb_size == 0) break;
+        if (mb_size == 0 || mb_size > count - done) break;
+        s = &s[parsed];
+        if (buffer != NULL) buffer = &buffer[mb_size];
         done += mb_size;
-        s += parsed;
     }
     return done;
 }
@@ -321,8 +301,7 @@ size_t utf8_to_local(char *buffer, const char *s, size_t count)
 size_t utf8_of_local(char *buffer, const char *s, size_t count)
 {
     int32_t rune;
-    wchar_t ws_buffer[] = {0, 0};
-    char cache[4];
+    wchar_t ws_buffer[2] = {0, 0};
     size_t done = 0, mb_size, ws_size, rune_size;
     if (s == NULL) {
         errno = EINVAL;
@@ -333,18 +312,12 @@ size_t utf8_of_local(char *buffer, const char *s, size_t count)
         ws_size = mbstowcs(ws_buffer, s, 1);
         if (ws_size == (size_t)-1) return (size_t)-1;
         utf16_decode(&rune, ws_buffer, (size_t)-1);
-        rune_size = utf8_encode(cache, rune);
-        if (rune_size > count - done) break;
+        rune_size = utf8_encode(buffer, rune);
+        if (rune_size > count - done || rune == 0) break;
         mb_size = wcstombs(NULL, ws_buffer, (size_t)-1);
-        if (buffer != NULL) {
-            *buffer++ = cache[0];
-            if (rune_size > 1) *buffer++ = cache[1];
-            if (rune_size > 2) *buffer++ = cache[2];
-            if (rune_size > 3) *buffer++ = cache[3];
-        }
-        if (rune == 0) break;
+        s = &s[mb_size];
+        if (buffer != NULL) buffer = &buffer[rune_size];
         done += rune_size;
-        s += mb_size;
     }
     return done;
 }
@@ -366,9 +339,10 @@ size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)
             errno = EILSEQ;
             return (size_t)-1;
         }
-        if (buffer != NULL) *buffer++ = (wchar_t)rune;
+        if (buffer != NULL) *buffer = (wchar_t)rune;
         if (rune == 0) break;
-        s += parsed;
+        s = &s[parsed];
+        if (buffer != NULL) buffer = &buffer[1];
         done += 1;
     }
     return done;
@@ -377,26 +351,20 @@ size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)
 size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)
 {
     size_t done = 0, rune_size;
-    char cache[4];
     if (p == NULL) {
         errno = EINVAL;
         return 0;
     }
     if (buffer == NULL) count = (size_t)-1;
     while (done < count) {
-        rune_size = utf8_encode(cache, (int32_t)*p);
+        rune_size = utf8_encode(buffer, (int32_t)*p);
         if (rune_size == 0) {
             errno = EILSEQ;
             return (size_t)-1;
         }
-        if (rune_size > count - done) break;
-        if (buffer != NULL) {
-            *buffer++ = cache[0];
-            if (rune_size > 1) *buffer++ = cache[1];
-            if (rune_size > 2) *buffer++ = cache[2];
-            if (rune_size > 3) *buffer++ = cache[3];
-        }
-        p += 1;
+        if (rune_size > count - done || *p == 0) break;
+        p = &p[1];
+        if (buffer != NULL) buffer = &buffer[rune_size];
         done += rune_size;
     }
     return done;
@@ -404,9 +372,8 @@ size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)
 
 size_t utf8_to_local(char *buffer, const char *s, size_t count)
 {
-    int32_t rune[] = {0, 0};
+    int32_t rune[2] = {0, 0};
     size_t done = 0, parsed, mb_size;
-    char cache[4];
     if (s == NULL) {
         errno = EINVAL;
         return 0;
@@ -418,26 +385,19 @@ size_t utf8_to_local(char *buffer, const char *s, size_t count)
             errno = EILSEQ;
             return (size_t)-1;
         }
-        mb_size = wcstombs(cache, rune, (size_t)-1);
+        mb_size = wcstombs(buffer, rune, (size_t)-1);
         if (mb_size == (size_t)-1) return (size_t)-1;
-        if (mb_size > count - done) break;
-        if (buffer != NULL) {
-            *buffer++ = cache[0];
-            if (mb_size > 1) *buffer++ = cache[1];
-            if (mb_size > 2) *buffer++ = cache[2];
-            if (mb_size > 3) *buffer++ = cache[3];
-        }
-        if (mb_size == 0) break;
+        if (mb_size == 0 || mb_size > count - done) break;
+        s = &s[parsed];
+        if (buffer != NULL) buffer = &buffer[mb_size];
         done += mb_size;
-        s += parsed;
     }
     return done;
 }
 
 size_t utf8_of_local(char *buffer, const char *s, size_t count)
 {
-    wchar_t ws_buffer[] = {0, 0};
-    char cache[4];
+    wchar_t ws_buffer[2] = {0, 0};
     size_t done = 0, mb_size, ws_size, rune_size;
     if (s == NULL) {
         errno = EINVAL;
@@ -447,18 +407,12 @@ size_t utf8_of_local(char *buffer, const char *s, size_t count)
     while (done < count) {
         ws_size = mbstowcs(ws_buffer, s, 1);
         if (ws_size == (size_t)-1) return (size_t)-1;
-        rune_size = utf8_encode(cache, (int32_t)*ws_buffer);
-        if (rune_size > count - done) break;
+        rune_size = utf8_encode(buffer, (int32_t)*ws_buffer);
+        if (rune_size > count - done || *ws_buffer == 0) break;
         mb_size = wcstombs(NULL, ws_buffer, (size_t)-1);
-        if (buffer != NULL) {
-            *buffer++ = cache[0];
-            if (rune_size > 1) *buffer++ = cache[1];
-            if (rune_size > 2) *buffer++ = cache[2];
-            if (rune_size > 3) *buffer++ = cache[3];
-        }
-        if (*s == 0) break;
+        s = &s[mb_size];
+        if (buffer != NULL) buffer = &buffer[rune_size];
         done += rune_size;
-        s += mb_size;
     }
     return done;
 }
