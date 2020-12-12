@@ -300,6 +300,7 @@ size_t utf8_to_local(char *buffer, const char *s, size_t count)
             errno = EILSEQ;
             return (size_t)-1;
         }
+        ws_buffer[1] = 0;
         utf16_encode(ws_buffer, rune); /* only the valid runes get here */
         mb_size = wcstombs(cache, ws_buffer, (size_t)-1);
         if (mb_size == (size_t)-1) return (size_t)-1; /* can't encode */
