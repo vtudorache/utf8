@@ -3,6 +3,7 @@
 ## Overview
 
 ### This is work in progress.
+### The library shows unexpected behaviour when compiled with Borland C++ !
 
 This is a small library for reading and converting to and from UTF-8 written 
 in C. I've started this work because I've always found annoying to use directly 
