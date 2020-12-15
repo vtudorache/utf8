@@ -77,6 +77,7 @@ int32_t utf8_get_rune(FILE *input)
     int32_t first, value = 0;
     if ((first = fgetc(input)) == EOF) return -1;
     if ((0xc0 & first) == 0x80) {
+        ungetc(read, input);
         errno = EILSEQ;
         return 0xfffd;
     }
