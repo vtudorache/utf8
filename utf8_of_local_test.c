@@ -55,8 +55,7 @@ int main(int argc, char **argv)
                 r = (char *)malloc(n + 1);
                 if (r != NULL) {
                     n = utf8_to_local(r, s, n + 1);
-                    printf("The string reconverted to locale is \"%s\".\n",
-                        r);
+                    printf("The string reconverted to locale is \"%s\".\n", r);
                     free(r);
                 }
             }
