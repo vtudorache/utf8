@@ -222,7 +222,9 @@ size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)
 {
     int32_t rune;
     size_t done = 0, parsed, rune_size;
-    wchar_t cache[2]; /* second buffer for conversion */
+    /* don't write directly to `buffer`, encode in `cache` buffer first, */
+    /* then check if the result fits within `count` output units         */
+    wchar_t cache[2]; 
     if (s == NULL) {
         errno = EINVAL;
         return 0;
@@ -251,7 +253,9 @@ size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)
 {
     int32_t rune;
     size_t done = 0, parsed, rune_size;
-    char cache[4]; /* second buffer for conversion */
+    /* don't write directly to `buffer`, encode in `cache` buffer first, */
+    /* then check if the result fits within `count` output units         */
+    char cache[4];
     if (p == NULL) {
         errno = EINVAL;
         return 0;
@@ -287,6 +291,8 @@ size_t utf8_to_local(char *buffer, const char *s, size_t count)
     end in a 0 rune.
     */
     wchar_t ws_buffer[] = {0, 0, 0};
+    /* don't write directly to `buffer`, encode in `cache` buffer first, */
+    /* then check if the result fits within `count` output units         */
     char cache[4];
     size_t done = 0, parsed, mb_size;
     if (s == NULL) {
@@ -300,7 +306,7 @@ size_t utf8_to_local(char *buffer, const char *s, size_t count)
             errno = EILSEQ;
             return (size_t)-1;
         }
-        ws_buffer[1] = 0;
+        ws_buffer[1] = 0; /* clear the (maybe left off) second wide character */
         utf16_encode(ws_buffer, rune); /* only the valid runes get here */
         mb_size = wcstombs(cache, ws_buffer, (size_t)-1);
         if (mb_size == (size_t)-1) return (size_t)-1; /* can't encode */
@@ -322,6 +328,8 @@ size_t utf8_of_local(char *buffer, const char *s, size_t count)
 {
     int32_t rune;
     wchar_t ws_buffer[] = {0, 0, 0};
+    /* don't write directly to `buffer`, encode in `cache` buffer first, */
+    /* then check if the result fits within `count` output units         */
     char cache[4];
     size_t done = 0, mb_size, ws_size, rune_size;
     if (s == NULL) {
@@ -384,6 +392,8 @@ size_t utf8_to_wchars(wchar_t *buffer, const char *s, size_t count)
 size_t utf8_of_wchars(char *buffer, const wchar_t *p, size_t count)
 {
     size_t done = 0, rune_size;
+    /* don't write directly to `buffer`, encode in `cache` buffer first, */
+    /* then check if the result fits within `count` output units         */
     char cache[4];
     if (p == NULL) {
         errno = EINVAL;
@@ -414,6 +424,8 @@ size_t utf8_to_local(char *buffer, const char *s, size_t count)
 {
     int32_t rune[] = {0, 0};
     size_t done = 0, parsed, mb_size;
+    /* don't write directly to `buffer`, encode in `cache` buffer first, */
+    /* then check if the result fits within `count` output units         */
     char cache[4];
     if (s == NULL) {
         errno = EINVAL;
@@ -446,6 +458,8 @@ size_t utf8_of_local(char *buffer, const char *s, size_t count)
 {
     wchar_t ws_buffer[] = {0, 0};
     size_t done = 0, mb_size, ws_size, rune_size;
+    /* don't write directly to `buffer`, encode in `cache` buffer first, */
+    /* then check if the result fits within `count` output units         */
     char cache[4];
     if (s == NULL) {
         errno = EINVAL;
