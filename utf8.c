@@ -536,7 +536,7 @@ size_t utf8_of_local(char *buffer, const char *s, size_t count)
 
 #endif
 
-size_t utf8_of_ascii(char *buffer, char *s, size_t count)
+size_t utf8_of_ascii(char *buffer, const char *s, size_t count)
 {
     int32_t rune;
     size_t done = 0, parsed, rune_size;
