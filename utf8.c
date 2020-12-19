@@ -60,7 +60,7 @@ size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)
     return n_bytes;
 }
 
-static size_t ucs4_decode_ascii(int32_t *rune, char *s, size_t n_bytes)
+static size_t ucs4_decode_ascii(int32_t *rune, const char *s, size_t n_bytes)
 {
     size_t parsed = 0;
     int32_t r = 0;
