@@ -60,6 +60,54 @@ size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)
     return n_bytes;
 }
 
+static size_t ucs4_decode_ascii(int32_t *rune, char *s, size_t n_bytes)
+{
+    size_t parsed = 0;
+    int32_t r = 0;
+    if (n_bytes < 1 || (0x80 & *s) != 0) return 0;
+    if (*s != '\\') {
+        if (rune != NULL) *rune = *s;
+        return 1;
+    }
+    if (n_bytes < 2) return 0;
+    parsed += 1;
+    switch (s[parsed]) {
+        case '\\':
+            if (rune != NULL) *rune = '\\';
+            return 2;
+        case 'U':
+            if (n_bytes < 10) return 0;
+            n_bytes = 10;
+            break;
+        case 'u':
+            if (n_bytes < 6) return 0;
+            n_bytes = 6;
+            break;
+        case 'x':
+            if (n_bytes < 4) return 0;
+            n_bytes = 4;
+            break;
+        default:
+            if (rune != NULL) *rune = '\\';	
+            return 1;
+    }
+    parsed += 1;
+    while (parsed < n_bytes) {
+        if ('0' <= s[parsed] && s[parsed] <= '9')
+            r = (r << 4) + (s[parsed] - '0');
+        else if ('a' <= s[parsed] && s[parsed] <= 'f')
+            r = (r << 4) + (s[parsed] - 'a' + 10);
+        else if ('A' <= s[parsed] && s[parsed] <= 'F')
+            r = (r << 4) + (s[parsed] - 'A' + 10);
+        else
+            return 0;
+        parsed += 1;
+    }
+    if (r < 0 || r > 0x10ffff || (0xd800 <= r && r <= 0xdfff)) return 0;
+    if (rune != NULL) *rune = r;
+    return parsed;
+}
+
 /*
 Gets the next rune in the readable stream `input`.
 Returns the rune.
@@ -487,3 +535,34 @@ size_t utf8_of_local(char *buffer, const char *s, size_t count)
 }
 
 #endif
+
+size_t utf8_of_ascii(char *buffer, char *s, size_t count)
+{
+    int32_t rune;
+    size_t done = 0, parsed, rune_size;
+    char cache[4];
+    if (s == NULL) {
+        errno = EINVAL;
+        return 0;
+    }
+    if (buffer == NULL) count = (size_t)-1;
+    while (done < count) {
+        parsed = ucs4_decode_ascii(&rune, s, (size_t)-1);
+        if (parsed == 0) {
+            errno = EILSEQ;
+            return (size_t)-1;
+        }
+        rune_size = utf8_encode(cache, rune);
+        if (rune_size > count - done) break;
+        if (buffer != NULL) { /* copy the cache */
+            *buffer++ = cache[0];
+            if (rune_size > 1) *buffer++ = cache[1];
+            if (rune_size > 2) *buffer++ = cache[2];
+            if (rune_size > 3) *buffer++ = cache[3];
+        }
+        if (rune == 0) break;
+        s += parsed;
+        done += rune_size;
+    }
+    return done;
+}
