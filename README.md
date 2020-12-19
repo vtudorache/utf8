@@ -40,6 +40,8 @@ ISO/ANSI.
 [`size_t utf8_to_local(char *buffer, const char *s, size_t count)`](#utf8_to_local)  
 [`size_t utf8_of_local(char *buffer, const char *s, size_t count)`](#utf8_of_local)  
 
+[`size_t utf8_of_ascii(char *buffer, const char *s, size_t count)`](#utf8_of_ascii)  
+
 ## Examples
 [`size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)`](#example-utf8_decode)  
 [`size_t utf8_encode(char *p, int32_t rune)`](#example-utf8_encode)
@@ -323,3 +325,22 @@ int main(int argc, char **argv)
     return argc - i;
 }
 ```
+### **utf8_of_ascii**
+`size_t utf8_of_ascii(char *buffer, const char *s, size_t count)`
+
+Writes at the address given by `buffer` (when not NULL) up 
+to `count` UTF-8 bytes converted from the ASCII characters of the 
+zero-terminated string `s`.
+Translates sequences like `\xDD`, `\uDDDD` and `\UDDDDDDDD` to the UTF-8
+equivalent of the rune with the given value, `D` in the examples above
+meaning a hexadecimal digit. The sequence `\\` is converted to a single
+backslash, so `\\uDDDD` is interpreted as '\', 'u', 'D', 'D', 'D', 'D' and
+not translated to UTF-8. A backslash followed by any other character is
+written as it is to the output buffer.
+Partial sequences are not converted.
+Returns the number of non-zero bytes written (even if `buffer` 
+is NULL).
+Returns 0 if the string `s` is empty ("\0").
+Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.
+Returns (size_t)-1 if `s` can't convert to valid UTF-8 or if there are 
+non-ASCII characters in the input (> 127).
