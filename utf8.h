@@ -112,6 +112,6 @@ Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.
 Returns (size_t)-1 if `s` can't convert to valid UTF-8 or if there are 
 non-ASCII characters in the input (> 127).
 */
-size_t utf8_of_ascii(char *buffer, char *s, size_t count);
+size_t utf8_of_ascii(char *buffer, const char *s, size_t count);
 
 #endif
