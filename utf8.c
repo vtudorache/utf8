@@ -60,6 +60,14 @@ size_t utf8_decode(int32_t *rune, const char *s, size_t n_bytes)
     return n_bytes;
 }
 
+/*
+Writes at the address given by `rune` the code point obtained from parsing
+at most `n_bytes` ASCII characters of the zero-terminated string `s`.
+Returns the number of characters parsed.
+Returns 0 if the first characters within `n_bytes` are't valid ASCII 
+sequence or the resulting code point is invalid.
+The source pointer `s` can't be NULL.
+*/
 static size_t ucs4_decode_ascii(int32_t *rune, const char *s, size_t n_bytes)
 {
     size_t parsed = 0;
