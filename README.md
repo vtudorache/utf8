@@ -10,7 +10,7 @@ seem the culprit).
 
 This is a small library for reading and converting to and from UTF-8 written 
 in C. I've started this work because I've always found annoying to use directly 
-the standard C library functions `mbstowcs`, `wcstombs` and the like to convert 
+the standard C library functions `mbstowcs`, `wcstombs` and the likes to convert 
 a locally encoded string to UTF-8, especially on Windows.  
 The conversion functions act in the same way as the standard C library 
 functions: passing a `NULL` pointer for the destination buffer makes the 
@@ -58,7 +58,7 @@ Gets the next rune in the readable stream `input`.
 Returns the rune.
 Returns `0xfffd` if the first characters in stream don't form a valid UTF-8 
 sequence or another error occured.  
-Returns `(size_t)-1` if the end-of-file has been reached.
+Returns `-1` if the end-of-file has been reached.
 The variable `errno` is set to `EILSEQ` if an invalid or incomplete sequence 
 was found, or to the last error code set by the standard library function 
 `fgetc`.
@@ -68,7 +68,7 @@ was found, or to the last error code set by the standard library function
 
 Puts to the writable stream `output` the UTF-8 bytes encoding `rune`.
 Returns the value of `rune` in the absence of error.
-Returns `(size_t)-1` if the operation fails. The `errno` variable is set to
+Returns `-1` if the operation fails. The `errno` variable is set to
 `EILSEQ` if `rune` isn't a valid code point or to the last error code set by
 the standard library function `fputc`.
 
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 `size_t utf8_encode(char *p, int32_t rune)`
 
 Writes at the address given by `p` the UTF-8 sequence encoding `rune`.  
-Returns the number of characters used, even when `p` is `NULL`.  
+Returns the number of characters written, even when `p` is `NULL`.  
 Returns `0` if `rune` is not a valid code point (the surrogate range is
 considered invalid).  
 
@@ -213,8 +213,8 @@ int main(int argc, char **argv)
 
 Writes at the address given by `buffer` (when not `NULL`) up to `count` wide 
 characters converted from the valid UTF-8 characters of the zero-terminated 
-string `s`. Partial sequences are not converted.  
-Returns the number of non-zero wide characters converted (even if `buffer` 
+string `s`. Partial sequences are not converted and stop the conversion.  
+Returns the number of non-zero wide characters written (even if `buffer` 
 is `NULL`).  
 Returns `0` if the string `s` is empty (`"\0"`).  
 Returns `0` and sets the global variable `errno` to `EINVAL` if `s` is `NULL`.  
@@ -226,7 +226,7 @@ Returns `(size_t)-1` if `s`contains invalid UTF-8 sequences.
 Writes at the address given by `buffer` (when not `NULL`) up to `count` 
 characters converted from the wide characters of the zero-terminated wide
 string `p`. Partial sequences are not converted.  
-Returns the number of non-zero bytes converted (even if `buffer` 
+Returns the number of non-zero bytes written (even if `buffer` 
 is `NULL`).  
 Returns `0` if the string `p` is empty (`"\0"`).  
 Returns `0` and sets the global variable `errno` to `EINVAL` if `p` is `NULL`.  
@@ -238,7 +238,7 @@ Returns `(size_t)-1` if `p` can't convert to valid UTF-8.
 Writes at the address given by `buffer` (when not `NULL`) up to `count` 
 locale encoded characters converted from the UTF-8 characters of the 
 zero-terminated string `s`. Partial sequences are not converted.  
-Returns the number of non-zero bytes converted (even if `buffer` 
+Returns the number of non-zero bytes written (even if `buffer` 
 is `NULL`).  
 Returns `0` if the string `s` is empty (`"\0"`).  
 Returns `0` and sets the global variable `errno` to `EINVAL` if `s` is `NULL`.  
@@ -250,7 +250,7 @@ Returns `(size_t)-1` if `s` can't convert to valid UTF-8.
 Writes at the address given by `buffer` (when not `NULL`) up to `count` 
 characters converted from the locale encoded characters of the 
 zero-terminated string `s`. Partial sequences are not converted.  
-Returns the number of non-zero bytes converted (even if `buffer` 
+Returns the number of non-zero bytes written (even if `buffer` 
 is `NULL`).  
 Returns `0` if the string `s` is empty (`"\0"`).  
 Returns `0` and sets the global variable `errno` to `EINVAL` if `s` is `NULL`.  
