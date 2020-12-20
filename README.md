@@ -6,7 +6,7 @@
 
 **The library shows unexpected behaviour when compiled with Borland C++ free 
 tools.** I'm currently testing the issue (`mbstowcs` and `wcstombs` functions
-seem the culprit).
+seem the culprits).
 
 This is a small library for reading and converting to and from UTF-8 written 
 in C. I've started this work because I've always found annoying to use directly 
@@ -328,7 +328,7 @@ int main(int argc, char **argv)
 ### **utf8_of_ascii**
 `size_t utf8_of_ascii(char *buffer, const char *s, size_t count)`
 
-Writes at the address given by `buffer` (when not NULL) up 
+Writes at the address given by `buffer` (when not `NULL`) up 
 to `count` UTF-8 bytes converted from the ASCII characters of the 
 zero-terminated string `s`.  
 Translates sequences like `\xDD`, `\uDDDD` and `\UDDDDDDDD` to the UTF-8
@@ -339,7 +339,7 @@ not translated to UTF-8. A backslash followed by any other character is
 written as it is to the output buffer. Partial sequences are not converted.
 Returns the number of non-zero bytes written (even if `buffer` 
 is NULL).  
-Returns 0 if the string `s` is empty ("\0").  
-Returns 0 and sets the global variable `errno` to EINVAL if `s` is NULL.  
-Returns (size_t)-1 if `s` can't convert to valid UTF-8 or if there are 
+Returns 0 if the string `s` is empty (`"\0"`).  
+Returns 0 and sets the global variable `errno` to `EINVAL` if `s` is `NULL`.  
+Returns `(size_t)-1` if `s` can't convert to valid UTF-8 or if there are 
 non-ASCII characters in the input (> 127).  
